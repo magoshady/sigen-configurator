@@ -23,45 +23,82 @@ export const metadata: Metadata = {
   icons: { icon: "/logo.png" },
 };
 
+/** "Prepared exclusively for" followed by the GreenDeal wordmark. */
+function PreparedFor({ dark = false }: { dark?: boolean }) {
+  return (
+    <span className="flex items-center gap-2.5">
+      <span
+        className={`text-[10px] sm:text-[11px] tracking-[0.14em] uppercase ${
+          dark ? "text-white/45" : "text-ink-faint"
+        }`}
+      >
+        Prepared exclusively for
+      </span>
+      <Image
+        src="/greendeal.png"
+        alt="GreenDeal"
+        width={500}
+        height={86}
+        className="h-4 w-auto sm:h-[18px]"
+      />
+    </span>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body className="min-h-dvh flex flex-col">
-        <header className="border-b border-rule">
-          <div className="mx-auto w-full max-w-4xl px-6 py-5 flex items-center justify-between gap-4">
+        <header className="bg-charcoal">
+          <div className="mx-auto w-full max-w-4xl px-6 py-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
             <div className="flex items-center gap-3">
               <Image
                 src="/logo.png"
                 alt=""
-                width={36}
-                height={36}
+                width={32}
+                height={32}
                 priority
-                className="h-9 w-9"
+                className="h-8 w-8 mark-on-dark"
               />
-              <span className="text-sm tracking-[0.16em] uppercase text-ink-soft">
-                Configuration Finder
+              <span className="text-sm tracking-[0.16em] uppercase text-white/75">
+                Candi Solutions
               </span>
             </div>
-            <span className="text-right text-[11px] sm:text-xs leading-tight tracking-[0.16em] uppercase text-ink-faint">
-              Candi Solutions
-              <span className="hidden sm:inline"> Pty Ltd</span>
-            </span>
+            <PreparedFor dark />
           </div>
+          <div
+            className="h-[3px] bg-gradient-to-r from-green via-teal to-blue"
+            aria-hidden
+          />
         </header>
 
         <main className="flex-1">{children}</main>
 
-        <footer className="mt-24 border-t border-rule">
-          <div className="mx-auto w-full max-w-4xl px-6 py-10 space-y-4">
-            <div className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="" width={20} height={20} className="h-5 w-5 opacity-60" />
-              <span className="text-[11px] tracking-[0.16em] uppercase text-ink-faint">
-                SigenStor Configuration Finder
-              </span>
+        <footer className="mt-24 bg-charcoal">
+          <div
+            className="h-[3px] bg-gradient-to-r from-green via-teal to-blue"
+            aria-hidden
+          />
+          <div className="mx-auto w-full max-w-4xl px-6 py-10 space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+              <div className="flex items-center gap-2.5">
+                <Image
+                  src="/logo.png"
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="h-5 w-5 mark-on-dark opacity-70"
+                />
+                <span className="text-[11px] tracking-[0.16em] uppercase text-white/55">
+                  Candi Solutions Pty Ltd
+                </span>
+              </div>
+              <PreparedFor dark />
             </div>
-            <div className="space-y-2 text-[11px] leading-relaxed text-ink-faint max-w-2xl">
+
+            <div className="space-y-2 text-[11px] leading-relaxed text-white/40 max-w-2xl">
               <p>
                 Model data is derived from the Sigenergy CEC-approved model
                 spreadsheet and reflects that list at the time of publication. It is
@@ -73,7 +110,7 @@ export default function RootLayout({
                 rejection by the Clean Energy Regulator. Always confirm the model
                 against the{" "}
                 <a
-                  className="underline underline-offset-2 hover:text-ink-soft"
+                  className="text-white/60 underline underline-offset-2 hover:text-white"
                   href="https://cleanenergycouncil.org.au/industry-programs/products-program/batteries"
                   target="_blank"
                   rel="noreferrer"

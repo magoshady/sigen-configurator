@@ -88,9 +88,9 @@ export default function Finder() {
             role="tab"
             aria-selected={mode === value}
             onClick={() => setMode(value)}
-            className={`px-4 py-3.5 text-sm transition-colors cursor-pointer ${
+            className={`relative px-4 py-3.5 text-sm transition-colors cursor-pointer ${
               mode === value
-                ? "text-ink bg-card font-medium"
+                ? "text-ink bg-card font-medium after:absolute after:inset-x-0 after:top-0 after:h-[3px] after:bg-green"
                 : "text-ink-faint bg-wash hover:text-ink-soft"
             } ${value === "name" ? "border-l border-rule" : ""}`}
           >
@@ -129,7 +129,7 @@ export default function Finder() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="e.g. 10T-48 or EV12"
-                className="w-full rounded-lg border border-rule-strong bg-card px-3.5 py-2.5 text-sm outline-none focus:border-ink-soft focus:ring-2 focus:ring-ink/5"
+                className="w-full rounded-lg border border-rule-strong bg-card px-3.5 py-2.5 text-sm outline-none focus:border-blue focus:ring-2 focus:ring-blue/15"
               />
               <p className="mt-3 text-xs text-ink-faint">
                 Enter at least 2 characters. Matches anywhere in the name.
@@ -186,7 +186,7 @@ export default function Finder() {
         <button
           onClick={clear}
           disabled={!dirty}
-          className="text-xs text-ink-soft underline underline-offset-4 hover:text-ink disabled:opacity-30 disabled:no-underline disabled:cursor-default cursor-pointer"
+          className="text-xs text-ink-soft underline underline-offset-4 hover:text-blue disabled:opacity-30 disabled:no-underline disabled:cursor-default cursor-pointer"
         >
           Clear
         </button>
@@ -258,7 +258,7 @@ function Row({ model }: { model: Model }) {
         <button
           onClick={copy}
           aria-label={`Copy ${model.m}`}
-          className="ml-1 rounded-md border border-rule px-2 py-1 text-[11px] text-ink-soft hover:border-rule-strong hover:text-ink transition-colors cursor-pointer w-14"
+          className="ml-1 rounded-md border border-rule px-2 py-1 text-[11px] text-ink-soft hover:border-blue hover:text-blue transition-colors cursor-pointer w-14"
         >
           {copied ? "Copied" : "Copy"}
         </button>
@@ -276,8 +276,8 @@ function Chip({
 }) {
   const styles = {
     plain: "bg-wash text-ink-soft",
-    solid: "bg-ink text-paper",
-    ev: "bg-ink/8 text-ink ring-1 ring-inset ring-rule-strong",
+    solid: "bg-charcoal text-white",
+    ev: "bg-green/15 text-green-deep ring-1 ring-inset ring-green/40 font-medium",
   }[tone];
   return (
     <span
@@ -359,7 +359,7 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full rounded-lg border border-rule-strong bg-card px-3 py-2.5 text-sm outline-none focus:border-ink-soft focus:ring-2 focus:ring-ink/5 cursor-pointer"
+      className="w-full rounded-lg border border-rule-strong bg-card px-3 py-2.5 text-sm outline-none focus:border-blue focus:ring-2 focus:ring-blue/15 cursor-pointer"
     >
       {options.map((o) => (
         <option key={o.value} value={o.value}>

@@ -67,7 +67,7 @@ export default function Home() {
             href="https://cleanenergycouncil.org.au/industry-programs/products-program/batteries"
             target="_blank"
             rel="noreferrer"
-            className="mt-5 inline-block rounded-lg border border-rule-strong px-4 py-2.5 text-sm hover:bg-wash transition-colors"
+            className="mt-5 inline-block rounded-lg bg-blue px-4 py-2.5 text-sm text-white hover:bg-blue/90 transition-colors"
           >
             CEC approved battery list →
           </a>

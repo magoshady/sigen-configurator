@@ -1,15 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-paper: #faf9f7;
+  /* Neutrals — cool slate, drawn from the GreenDeal navigation bar. */
+  --color-charcoal: #1d2225;
+  --color-charcoal-soft: #2b3237;
+  --color-paper: #f4f7f9;
   --color-card: #ffffff;
-  --color-ink: #2e2e2e;
-  --color-ink-soft: #6b6a67;
-  --color-ink-faint: #9c9a95;
-  --color-rule: #e5e3de;
-  --color-rule-strong: #d5d2cb;
-  --color-accent: #3a3a38;
-  --color-wash: #f2f0eb;
+  --color-ink: #14181b;
+  --color-ink-soft: #566069;
+  --color-ink-faint: #8b959e;
+  --color-rule: #e1e7ec;
+  --color-rule-strong: #c8d2da;
+  --color-wash: #edf1f5;
+
+  /* Brand — sampled from the GreenDeal wordmark gradient. */
+  --color-green: #01c774;
+  --color-green-deep: #048554;
+  --color-teal: #01a6a6;
+  --color-blue: #0168fc;
 
   --font-display: var(--font-serif), Georgia, "Times New Roman", serif;
   --font-sans: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
@@ -29,6 +37,11 @@ body {
 /* Model numbers and capacities line up in columns when digits are tabular. */
 .tnum {
   font-variant-numeric: tabular-nums;
+}
+
+/* The Candi mark is dark on transparent; flip it for the charcoal bars. */
+.mark-on-dark {
+  filter: invert(1) brightness(1.6);
 }
 
 @media (prefers-reduced-motion: reduce) {
