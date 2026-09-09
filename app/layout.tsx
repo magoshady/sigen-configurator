@@ -16,11 +16,28 @@ const display = Manrope({
   display: "swap",
 });
 
+const SITE = "https://sigen.candisolutions.com.au";
+const TITLE = "SigenStor Battery Configuration Finder";
+const DESCRIPTION =
+  "Find the exact CEC-approved Sigenergy SigenStor model number for any combination of battery modules, inverter and EV charger.";
+
 export const metadata: Metadata = {
-  title: "SigenStor Battery Configuration Finder",
-  description:
-    "Find the exact CEC-approved Sigenergy SigenStor model number for any combination of battery modules, inverter and EV charger.",
+  metadataBase: new URL(SITE),
+  title: TITLE,
+  description: DESCRIPTION,
   icons: { icon: "/logo.png" },
+  openGraph: {
+    type: "website",
+    url: SITE,
+    siteName: "Candi Solutions",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 /** "Prepared exclusively for" followed by the GreenDeal wordmark. */
