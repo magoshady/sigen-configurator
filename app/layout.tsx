@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import Image from "next/image";
 import "./globals.css";
 
@@ -9,10 +9,10 @@ const sans = Inter({
   display: "swap",
 });
 
-const serif = Instrument_Serif({
+const display = Manrope({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-serif",
+  weight: ["700", "800"],
+  variable: "--font-display-family",
   display: "swap",
 });
 
@@ -49,7 +49,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+    <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-dvh flex flex-col">
         <header className="bg-charcoal">
           <div className="mx-auto w-full max-w-4xl px-6 py-4 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">

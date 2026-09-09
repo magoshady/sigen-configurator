@@ -19,7 +19,7 @@
   --color-teal: #01a6a6;
   --color-blue: #0168fc;
 
-  --font-display: var(--font-serif), Georgia, "Times New Roman", serif;
+  --font-display: var(--font-display-family), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
 }
 

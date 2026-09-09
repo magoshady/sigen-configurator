@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="mx-auto w-full max-w-4xl px-6">
       <section className="pt-14 pb-10 sm:pt-20">
-        <h1 className="font-display text-4xl sm:text-5xl leading-[1.1] tracking-tight">
+        <h1 className="font-display font-extrabold text-[2.6rem] sm:text-6xl leading-[1.05] tracking-[-0.03em]">
           SigenStor Battery
           <br />
           Configuration Finder
@@ -27,7 +27,9 @@ export default function Home() {
 
       <section className="mt-14 grid gap-8 sm:grid-cols-2">
         <div>
-          <h2 className="font-display text-2xl">Reading a model number</h2>
+          <h2 className="font-display font-extrabold text-3xl tracking-[-0.02em]">
+            Reading a model number
+          </h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft">
             <span className="text-ink tnum">SigenStor-10T-EV12-24.1</span> breaks
             down into three parts:
@@ -49,7 +51,9 @@ export default function Home() {
         </div>
 
         <div>
-          <h2 className="font-display text-2xl">Before you lodge</h2>
+          <h2 className="font-display font-extrabold text-3xl tracking-[-0.02em]">
+            Before you lodge
+          </h2>
           <ul className="mt-3 space-y-2.5 text-sm leading-relaxed text-ink-soft">
             <li>
               Count each module size separately — the finder matches exact
@@ -83,7 +87,9 @@ function Stat({ value, label }: { value: string; label: string }) {
       <dt className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">
         {label}
       </dt>
-      <dd className="font-display text-2xl tnum">{value}</dd>
+      <dd className="font-display font-extrabold text-2xl tnum tracking-[-0.02em]">
+        {value}
+      </dd>
     </div>
   );
 }
