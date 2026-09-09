@@ -30,17 +30,23 @@ export default function RootLayout({
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body className="min-h-dvh flex flex-col">
         <header className="border-b border-rule">
-          <div className="mx-auto w-full max-w-4xl px-6 py-5 flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt=""
-              width={36}
-              height={36}
-              priority
-              className="h-9 w-9"
-            />
-            <span className="text-sm tracking-[0.16em] uppercase text-ink-soft">
-              Configuration Finder
+          <div className="mx-auto w-full max-w-4xl px-6 py-5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo.png"
+                alt=""
+                width={36}
+                height={36}
+                priority
+                className="h-9 w-9"
+              />
+              <span className="text-sm tracking-[0.16em] uppercase text-ink-soft">
+                Configuration Finder
+              </span>
+            </div>
+            <span className="text-right text-[11px] sm:text-xs leading-tight tracking-[0.16em] uppercase text-ink-faint">
+              Candi Solutions
+              <span className="hidden sm:inline"> Pty Ltd</span>
             </span>
           </div>
         </header>
@@ -68,7 +74,7 @@ export default function RootLayout({
                 against the{" "}
                 <a
                   className="underline underline-offset-2 hover:text-ink-soft"
-                  href="https://cleanenergycouncil.org.au/industry-programs/products/batteries"
+                  href="https://cleanenergycouncil.org.au/industry-programs/products-program/batteries"
                   target="_blank"
                   rel="noreferrer"
                 >

@@ -100,12 +100,12 @@ export default function Finder() {
       </div>
 
       {/* Inputs */}
-      <div className="p-5 sm:p-6 grid gap-6 md:grid-cols-[1fr_auto_15rem]">
+      <div className="p-5 sm:p-6 grid gap-5">
         <div>
           {mode === "count" ? (
             <>
               <Label>Battery modules installed</Label>
-              <div className="grid gap-2.5 sm:grid-cols-2">
+              <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
                 {MODULE_SIZES.map((size, i) => (
                   <Stepper
                     key={size}
@@ -138,9 +138,9 @@ export default function Finder() {
           )}
         </div>
 
-        <div className="hidden md:block w-px bg-rule" aria-hidden />
+        <div className="h-px bg-rule" aria-hidden />
 
-        <div className="grid gap-4 content-start">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <Label>Inverter</Label>
             <Select

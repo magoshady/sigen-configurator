@@ -64,7 +64,7 @@ export default function Home() {
             </li>
           </ul>
           <a
-            href="https://cleanenergycouncil.org.au/industry-programs/products/batteries"
+            href="https://cleanenergycouncil.org.au/industry-programs/products-program/batteries"
             target="_blank"
             rel="noreferrer"
             className="mt-5 inline-block rounded-lg border border-rule-strong px-4 py-2.5 text-sm hover:bg-wash transition-colors"
