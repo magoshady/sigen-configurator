@@ -39,7 +39,8 @@ export default function Finder() {
 
   const total = counts.reduce((a, b) => a + b, 0);
   const searching = mode === "name" && query.trim().length >= 2;
-  const active = mode === "count" ? total > 0 : searching;
+  const counting = mode === "count" && total > 0;
+  const active = counting || searching || inverter !== "";
 
   const results = useMemo(() => {
     if (!active) return [];
@@ -47,12 +48,11 @@ export default function Finder() {
     return MODELS.filter((m) => {
       if (inverter && m.i !== inverter) return false;
       if (ev !== "any" && m.e !== ev) return false;
-      if (mode === "count") {
-        return m.b.every((n, i) => n === counts[i]);
-      }
-      return m.m.toLowerCase().replace(/\s+/g, "").includes(q);
+      if (counting) return m.b.every((n, i) => n === counts[i]);
+      if (searching) return m.m.toLowerCase().replace(/\s+/g, "").includes(q);
+      return true;
     }).sort(compare);
-  }, [active, mode, counts, query, inverter, ev]);
+  }, [active, counting, searching, counts, query, inverter, ev]);
 
   function setCount(i: number, next: number) {
     setCounts((prev) => {
@@ -203,8 +203,8 @@ export default function Finder() {
             }
             body={
               mode === "count"
-                ? "Set how many batteries of each size are installed on site."
-                : "Enter at least two characters of the SigenStor model name."
+                ? "Set how many batteries of each size are installed on site, or pick an inverter to browse its models."
+                : "Enter at least two characters of the SigenStor model name, or pick an inverter to browse its models."
             }
           />
         ) : results.length === 0 ? (
