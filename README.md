@@ -9,7 +9,7 @@ required for a valid STC claim.
 A SigenStor stack holds up to six battery modules, in 5 / 6 / 8 / 10 kWh sizes,
 paired with one of twelve inverters (single-phase `3S`–`12S`, three-phase
 `5T`–`30T`) and optionally an EV charger module (`EV12` or `EV25`). Every valid
-permutation is its own CEC-approved model number — 1,740 of them.
+permutation is its own CEC-approved model number — 2,068 of them.
 
 Two ways to search:
 
