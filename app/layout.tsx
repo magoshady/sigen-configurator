@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Manrope } from "next/font/google";
 import Image from "next/image";
+import BrandNav from "./brand-nav";
+import FooterDisclaimer from "./footer-disclaimer";
 import "./globals.css";
 
 const sans = Inter({
@@ -91,6 +93,8 @@ export default function RootLayout({
           />
         </header>
 
+        <BrandNav />
+
         <main className="flex-1">{children}</main>
 
         <footer className="mt-24 bg-charcoal">
@@ -116,32 +120,7 @@ export default function RootLayout({
             </div>
 
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-              <div className="space-y-2 text-[11px] leading-relaxed text-white/40 max-w-2xl">
-                <p>
-                  Model data is derived from the Sigenergy CEC-approved model
-                  spreadsheet and reflects that list at the time of publication. It
-                  is provided as a lookup aid only.
-                </p>
-                <p>
-                  Selecting the exact matching model number is a strict requirement
-                  for a valid STC claim. An incorrect selection may lead to delays or
-                  rejection by the Clean Energy Regulator. Always confirm the model
-                  against the{" "}
-                  <a
-                    className="text-white/60 underline underline-offset-2 hover:text-white"
-                    href="https://cleanenergycouncil.org.au/industry-programs/products-program/batteries"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    CEC approved battery list
-                  </a>{" "}
-                  before lodging.
-                </p>
-                <p>
-                  Not affiliated with or endorsed by Sigenergy. All capacities are
-                  nameplate figures in kWh.
-                </p>
-              </div>
+              <FooterDisclaimer />
 
               <p className="shrink-0 text-[11px] leading-relaxed text-white/45 sm:text-right">
                 For questions, please email us at{" "}

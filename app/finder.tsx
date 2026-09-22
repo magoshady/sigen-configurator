@@ -9,7 +9,7 @@ import {
   MAX_MODULES as MAX,
   STANDARD,
   type Model,
-} from "@/lib/models";
+} from "@/lib/sigenergy";
 
 type Counts = [number, number, number, number];
 type Mode = "count" | "name";
