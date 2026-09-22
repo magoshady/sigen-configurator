@@ -1,27 +1,26 @@
 import Finder from "./finder";
-import { MODELS } from "@/lib/models";
+import { BrandHero } from "./brand-hero";
+import { MODELS } from "@/lib/sigenergy";
 
 export default function Home() {
   return (
     <div className="mx-auto w-full max-w-4xl px-6">
-      <section className="pt-14 pb-10 sm:pt-20">
-        <h1 className="font-display font-extrabold text-[2.6rem] sm:text-6xl leading-[1.05] tracking-[-0.03em]">
-          SigenStor Battery
-          <br />
-          Configuration Finder
-        </h1>
-        <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-ink-soft">
-          Enter the battery modules installed on site and get the exact
-          CEC-approved Sigenergy SigenStor model number to use on your STC claim.
-        </p>
-
-        <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-4">
-          <Stat value={MODELS.length.toLocaleString()} label="Approved models" />
-          <Stat value="4" label="Module sizes" />
-          <Stat value="12" label="Inverters" />
-          <Stat value="1–6" label="Modules per stack" />
-        </dl>
-      </section>
+      <BrandHero
+        title={
+          <>
+            SigenStor Battery
+            <br />
+            Configuration Finder
+          </>
+        }
+        description="Enter the battery modules installed on site and get the exact CEC-approved Sigenergy SigenStor model number to use on your STC claim."
+        stats={[
+          { value: MODELS.length.toLocaleString(), label: "Approved models" },
+          { value: "4", label: "Module sizes" },
+          { value: "12", label: "Inverters" },
+          { value: "1–6", label: "Modules per stack" },
+        ]}
+      />
 
       <Finder />
 
@@ -77,19 +76,6 @@ export default function Home() {
           </a>
         </div>
       </section>
-    </div>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <dt className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-        {label}
-      </dt>
-      <dd className="font-display font-extrabold text-2xl tnum tracking-[-0.02em]">
-        {value}
-      </dd>
     </div>
   );
 }

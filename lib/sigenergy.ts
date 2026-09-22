@@ -1,4 +1,5 @@
-import raw from "@/data/models.json";
+import raw from "@/data/sigenergy-models.json";
+import type { BrandMeta } from "@/lib/brand-types";
 
 export type Model = {
   /** Full CEC-approved model name, e.g. "SigenStor-10T-EV12-24.1" */
@@ -33,3 +34,11 @@ export const EV_CHARGERS = ["", "EV12", "EV25"] as const;
 export const MAX_MODULES = 6;
 
 export const STANDARD = "AS4777-2 2020";
+
+export const BRAND: BrandMeta = {
+  slug: "sigenergy",
+  label: "Sigenergy",
+  href: "/",
+  manufacturer: "Sigenergy",
+  dataSource: "Sigenergy CEC-approved model spreadsheet",
+};
