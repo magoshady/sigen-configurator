@@ -19,6 +19,12 @@
   --color-teal: #01a6a6;
   --color-blue: #0168fc;
 
+  /* Status colors — verdicts that don't fit a plain pass/fail. */
+  --color-amber: #d97706;
+  --color-amber-deep: #92400e;
+  --color-red: #dc2626;
+  --color-red-deep: #991b1b;
+
   --font-display: var(--font-display-family), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
 }
