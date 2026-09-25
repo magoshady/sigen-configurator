@@ -164,13 +164,12 @@ export default function TeslaPage() {
             </li>
             <li className="grid gap-1 sm:grid-cols-[8rem_1fr] sm:gap-4">
               <span className="text-sm font-medium tnum text-ink">40.5</span>
-              <p className="text-sm leading-relaxed text-ink-soft">
-                Total usable battery capacity.{" "}
-                <span className="text-ink">13.5 kWh</span> = Powerwall 3
-                only; <span className="text-ink">27</span> = +1 Expansion;{" "}
-                <span className="text-ink">40.5</span> = +2 Expansions;{" "}
-                <span className="text-ink">54</span> = +3 Expansions.
-              </p>
+              <div>
+                <p className="text-sm leading-relaxed text-ink-soft">
+                  Total usable battery capacity of the whole system, in kWh.
+                </p>
+                <CapacityLadder />
+              </div>
             </li>
           </ul>
 
@@ -292,6 +291,37 @@ export default function TeslaPage() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+const LADDER_ROWS = [
+  { code: "13.5", blocks: 1, what: "Powerwall 3 only", highlight: false },
+  { code: "27", blocks: 2, what: "Powerwall 3 + 1 Expansion", highlight: false },
+  { code: "40.5", blocks: 3, what: "Powerwall 3 + 2 Expansions", highlight: true },
+  { code: "54", blocks: 4, what: "Powerwall 3 + 3 Expansions", highlight: false },
+];
+
+function CapacityLadder() {
+  return (
+    <div className="mt-3 flex flex-col gap-1">
+      {LADDER_ROWS.map((row) => (
+        <div
+          key={row.code}
+          className={`flex items-center gap-3.5 rounded-md px-2 py-1.5 ${
+            row.highlight ? "bg-blue/5" : ""
+          }`}
+        >
+          <span className="w-11 shrink-0 text-right text-sm font-semibold tnum text-ink">{row.code}</span>
+          <span className="flex w-[70px] shrink-0 gap-0.5" aria-hidden>
+            <span className="h-[21px] w-[15px] rounded-sm border border-blue bg-blue/20" />
+            {Array.from({ length: row.blocks - 1 }, (_, i) => (
+              <span key={i} className="h-[21px] w-[15px] rounded-sm border border-green/50 bg-green/20" />
+            ))}
+          </span>
+          <span className="text-sm text-ink-soft">{row.what}</span>
+        </div>
+      ))}
     </div>
   );
 }

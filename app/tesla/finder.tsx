@@ -150,6 +150,7 @@ function BuildPane({
               { value: "3", label: "3", sub: "54 kWh" },
             ]}
           />
+          <SystemDiagram isAc={result.isAc} exp={build.exp} totalKwh={result.usableKwh} />
         </Field>
       </div>
 
@@ -540,6 +541,48 @@ function SegGroup({
           </button>
         );
       })}
+    </div>
+  );
+}
+
+function SystemDiagram({
+  isAc,
+  exp,
+  totalKwh,
+}: {
+  isAc: boolean;
+  exp: number;
+  totalKwh: number;
+}) {
+  return (
+    <div aria-hidden="true" className="mt-3.5 flex flex-wrap items-center gap-2">
+      <UnitBox tone="accent" name={isAc ? "Powerwall 3 AC" : "Powerwall 3"} part={isAc ? "1707000-70" : "1707000"} />
+      {Array.from({ length: exp }, (_, i) => (
+        <span key={i} className="contents">
+          <span className="text-base font-medium text-ink-faint">+</span>
+          <UnitBox tone="green" name="Expansion" part="1807000" />
+        </span>
+      ))}
+      <span className="text-base font-medium text-ink-faint">=</span>
+      <div className="flex items-baseline gap-1.5 text-sm font-semibold tnum">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-ink-faint">Total</span>
+        {totalKwh.toFixed(1)} kWh
+      </div>
+    </div>
+  );
+}
+
+function UnitBox({ tone, name, part }: { tone: "accent" | "green"; name: string; part: string }) {
+  const toneClasses =
+    tone === "accent" ? "border-blue bg-blue/10" : "border-green/50 bg-green/10";
+  const nameClasses = tone === "accent" ? "text-blue" : "text-green-deep";
+  return (
+    <div className={`w-[76px] shrink-0 rounded-lg border px-1.5 py-1.5 text-center ${toneClasses}`}>
+      <p className={`text-[10px] font-semibold leading-tight ${nameClasses}`}>{name}</p>
+      <p className="mt-1 rounded-sm bg-ink/[0.06] px-0.5 py-0.5 font-mono text-[9px] tracking-tight text-ink-soft">
+        {part}
+      </p>
+      <p className="mt-1 text-[10.5px] font-semibold tnum text-ink-soft">13.5 kWh</p>
     </div>
   );
 }
