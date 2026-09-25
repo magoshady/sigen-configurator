@@ -83,28 +83,37 @@ function BuildPane({
         <Field
           n={1}
           title="Which Powerwall is installed?"
-          help="Powerwall 3 has the PV inverter built in and shows PHOTOVOLTAIC (PV) POWER CONVERSION EQUIPMENT on the nameplate. Powerwall 3 AC couples to an existing solar system."
+          help={
+            <>
+              Not sure which one you are looking at? See{" "}
+              <a href="#vs" className="text-blue underline underline-offset-2">
+                Powerwall 3 vs Powerwall 3 AC
+              </a>{" "}
+              below.
+            </>
+          }
         >
           <SegGroup
             name="ptype"
+            stacked
             value={build.ptype}
             onChange={(v) =>
               setBuild((prev) => ({ ...prev, ptype: v as BuildInput["ptype"] }))
             }
             options={[
-              { value: "dc", label: "Powerwall 3", sub: "DC-coupled, PV inverter built in" },
-              { value: "ac", label: "Powerwall 3 AC", sub: "AC-coupled, fixed 5 kW" },
+              { value: "dc", label: "Powerwall 3", sub: "1707000-xx-y", subMono: true },
+              { value: "ac", label: "Powerwall 3 AC", sub: "1707000-70-y", subMono: true },
             ]}
           />
         </Field>
 
         <Field
           n={2}
-          title="Commissioned inverter output"
+          title="Inverter size"
           help={
             isAc
-              ? "Powerwall 3 AC is a fixed 5 kW system — the output is not configurable and the CEC model reads ACPW3 in this position."
-              : "Not readable from the part number. Confirm the commissioned inverter output from the compliance paperwork."
+              ? "ACPW3 has a 5 kW inverter."
+              : "Not readable from the part number. Confirm the inverter size from the compliance paperwork."
           }
           dimmed={isAc}
         >
@@ -126,7 +135,7 @@ function BuildPane({
         <Field
           n={3}
           title="Expansion units in the photos"
-          help="Count the unit with a part number starting 1807000. Each adds 13.5 kWh of usable capacity."
+          help="Count the units with a part number starting 1807000. Each adds 13.5 kWh of usable capacity."
         >
           <SegGroup
             name="exp"
@@ -461,7 +470,7 @@ function Field({
 }: {
   n: number;
   title: string;
-  help: string;
+  help: React.ReactNode;
   dimmed?: boolean;
   children: React.ReactNode;
 }) {
@@ -485,15 +494,21 @@ function SegGroup({
   onChange,
   options,
   disabled,
+  stacked,
 }: {
   name: string;
   value: string;
   onChange: (v: string) => void;
-  options: { value: string; label: string; sub?: string }[];
+  options: { value: string; label: string; sub?: string; subMono?: boolean }[];
   disabled?: boolean;
+  stacked?: boolean;
 }) {
   return (
-    <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={name}>
+    <div
+      className={stacked ? "flex flex-col gap-2" : "flex flex-wrap gap-2"}
+      role="radiogroup"
+      aria-label={name}
+    >
       {options.map((option) => {
         const active = value === option.value;
         return (
@@ -505,6 +520,8 @@ function SegGroup({
             disabled={disabled}
             onClick={() => onChange(option.value)}
             className={`flex flex-col gap-0.5 rounded-lg border px-3.5 py-2 text-left text-[13.5px] font-medium leading-tight transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 ${
+              stacked ? "w-full" : ""
+            } ${
               active
                 ? "border-blue bg-blue/10 text-blue ring-1 ring-inset ring-blue/40"
                 : "border-rule bg-wash text-ink-soft hover:border-rule-strong"
@@ -513,7 +530,7 @@ function SegGroup({
             {option.label}
             {option.sub && (
               <span
-                className={`text-[11px] font-normal ${
+                className={`text-[11px] font-normal ${option.subMono ? "font-mono tnum" : ""} ${
                   active ? "text-blue/80" : "text-ink-faint"
                 }`}
               >

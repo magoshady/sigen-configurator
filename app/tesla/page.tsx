@@ -27,6 +27,7 @@ export default function TeslaPage() {
     <div className="mx-auto w-full max-w-4xl px-6">
       <BrandHero
         title="Tesla Battery Model Finder"
+        description="Each Powerwall has 13.5 kWh of storage. Additional units can be added to increase the total battery capacity."
         stats={[
           { value: String(ROWS.length), label: "Tesla models on list" },
           { value: "3", label: "Inverter configurations" },
