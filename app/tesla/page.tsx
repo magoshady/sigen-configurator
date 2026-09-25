@@ -53,6 +53,69 @@ export default function TeslaPage() {
         </a>
       </section>
 
+      <section id="vs" className="mt-14 scroll-mt-20">
+        <h2 className="font-display font-extrabold text-3xl tracking-[-0.02em]">
+          Powerwall 3 vs Powerwall 3 AC
+        </h2>
+
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <div className="overflow-hidden rounded-2xl border border-rule bg-card">
+            <div className="border-b border-rule px-5 py-4">
+              <h3 className="text-base font-medium">Powerwall 3</h3>
+              <span className="mt-1.5 inline-block rounded-md bg-blue/10 px-2 py-1 text-[13px] font-medium tnum text-blue">
+                1707000-xx-y
+              </span>
+            </div>
+            <ul className="list-disc space-y-2 px-5 py-4 pl-8 text-sm leading-relaxed text-ink-soft marker:text-ink-faint">
+              <li>
+                Battery with an <b className="font-medium text-ink">inbuilt inverter</b> that can be configured to
+                5, 10 or 11.04 kVA.
+              </li>
+              <li>
+                Part number starts with <span className="tnum">1707000</span>.
+              </li>
+              <li>
+                Nameplate includes{" "}
+                <span className="tnum">PHOTOVOLTAIC (PV) POWER CONVERSION EQUIPMENT</span>.
+              </li>
+              <li>
+                Common in PV + battery installations because the solar panels can connect directly to the
+                Powerwall 3.
+              </li>
+            </ul>
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-rule bg-card">
+            <div className="border-b border-rule px-5 py-4">
+              <h3 className="text-base font-medium">Powerwall 3 AC</h3>
+              <span className="mt-1.5 inline-block rounded-md bg-green/10 px-2 py-1 text-[13px] font-medium tnum text-green-deep">
+                1707000-<b className="font-bold underline underline-offset-2">70</b>-y
+              </span>
+            </div>
+            <ul className="list-disc space-y-2 px-5 py-4 pl-8 text-sm leading-relaxed text-ink-soft marker:text-ink-faint">
+              <li>
+                Battery with a <b className="font-medium text-ink">fixed 5 kW inverter</b>.
+              </li>
+              <li>
+                Part number{" "}
+                <span className="tnum">
+                  1707000-<b className="font-bold underline underline-offset-2">70</b>-y
+                </span>
+                .
+              </li>
+              <li>
+                CEC models contain <span className="tnum">ACPW3</span> — e.g.{" "}
+                <span className="tnum">1707000-ACPW3-13.5</span>.
+              </li>
+              <li>
+                Typically used in battery-only installations. If solar is installed, the panels connect to a
+                separate inverter.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <section id="reading" className="mt-14 scroll-mt-20">
         <h2 className="font-display font-extrabold text-3xl tracking-[-0.02em]">
           Reading a model number
