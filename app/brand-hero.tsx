@@ -8,7 +8,7 @@ export function BrandHero({
 }: {
   title: React.ReactNode;
   description?: string;
-  stats: Stat[];
+  stats?: Stat[];
 }) {
   return (
     <section className="pt-14 pb-10 sm:pt-20">
@@ -21,18 +21,20 @@ export function BrandHero({
         </p>
       )}
 
-      <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-4">
-        {stats.map((stat) => (
-          <div key={stat.label}>
-            <dt className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-              {stat.label}
-            </dt>
-            <dd className="font-display font-extrabold text-2xl tnum tracking-[-0.02em]">
-              {stat.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      {stats && stats.length > 0 && (
+        <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-4">
+          {stats.map((stat) => (
+            <div key={stat.label}>
+              <dt className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">
+                {stat.label}
+              </dt>
+              <dd className="font-display font-extrabold text-2xl tnum tracking-[-0.02em]">
+                {stat.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </section>
   );
 }
