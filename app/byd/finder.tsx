@@ -2,39 +2,55 @@
 
 import { useMemo, useState } from "react";
 import {
-  FAMILIES,
-  matchByCapacity,
-  round2,
+  FAMS,
+  tileSubLabel,
+  computeModulesBuild,
+  computeMixBuild,
+  computeSingleBuild,
   computeVerdict,
+  stackBricks,
+  mixBricks,
+  checkVisual,
   type BydFamily,
-  type BydRow,
+  type BuildResult,
   type Verdict,
+  type Brick,
 } from "@/lib/byd";
+
+const EXAMPLE_MODELS = [
+  "HVS 10.2",
+  "HVM 16.6",
+  "HVM+ 16.6",
+  "HVB 17.8",
+  "HVE 12.8-1",
+  "LVS 16.0",
+  "Battery-Box Premium LVL15.4",
+];
 
 type Tab = "build" | "check";
 
-const EXAMPLE_MODELS = ["HVS 7.7", "HVM 13.8", "HVM+ 13.8", "HVB 17.8", "HVE 10.7", "LVS 12.0", "LV Flex"];
-
 export default function BydFinder() {
   const [tab, setTab] = useState<Tab>("build");
-  const [familySlug, setFamilySlug] = useState(FAMILIES[0].slug);
-  const [modules, setModules] = useState(FAMILIES[0].minModules ?? 1);
-  const [modulesA, setModulesA] = useState(1);
-  const [modulesB, setModulesB] = useState(0);
-  const [perUnitCount, setPerUnitCount] = useState(1);
+  const [famId, setFamId] = useState("HVS");
+  const [n, setN] = useState(4);
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(2);
   const [query, setQuery] = useState("");
 
-  const family = FAMILIES.find((f) => f.slug === familySlug) ?? FAMILIES[0];
+  const today = useMemo(() => new Date(), []);
+  const fam = useMemo(() => FAMS.find((f) => f.id === famId) ?? FAMS[0], [famId]);
 
-  function selectFamily(next: BydFamily) {
-    setFamilySlug(next.slug);
-    setModules(next.minModules ?? 1);
-    setModulesA(1);
-    setModulesB(0);
-    setPerUnitCount(1);
+  const result = useMemo<BuildResult>(() => {
+    if (fam.kind === "single") return computeSingleBuild(fam, today);
+    if (fam.kind === "mix") return computeMixBuild(fam, a, b, today);
+    return computeModulesBuild(fam, n, today);
+  }, [fam, n, a, b, today]);
+
+  const verdict = useMemo(() => computeVerdict(query, today), [query, today]);
+
+  function selectFam(id: string) {
+    setFamId(id);
   }
-
-  const verdict = useMemo(() => computeVerdict(query), [query]);
 
   return (
     <section className="rounded-2xl border border-rule bg-card overflow-hidden">
@@ -63,16 +79,15 @@ export default function BydFinder() {
 
       {tab === "build" ? (
         <BuildPane
-          family={family}
-          onSelectFamily={selectFamily}
-          modules={modules}
-          setModules={setModules}
-          modulesA={modulesA}
-          setModulesA={setModulesA}
-          modulesB={modulesB}
-          setModulesB={setModulesB}
-          perUnitCount={perUnitCount}
-          setPerUnitCount={setPerUnitCount}
+          fam={fam}
+          n={n}
+          a={a}
+          b={b}
+          result={result}
+          onSelectFam={selectFam}
+          onChangeN={setN}
+          onChangeA={setA}
+          onChangeB={setB}
         />
       ) : (
         <CheckPane query={query} setQuery={setQuery} verdict={verdict} />
@@ -82,288 +97,264 @@ export default function BydFinder() {
 }
 
 function BuildPane({
-  family,
-  onSelectFamily,
-  modules,
-  setModules,
-  modulesA,
-  setModulesA,
-  modulesB,
-  setModulesB,
-  perUnitCount,
-  setPerUnitCount,
+  fam,
+  n,
+  a,
+  b,
+  result,
+  onSelectFam,
+  onChangeN,
+  onChangeA,
+  onChangeB,
 }: {
-  family: BydFamily;
-  onSelectFamily: (f: BydFamily) => void;
-  modules: number;
-  setModules: (n: number) => void;
-  modulesA: number;
-  setModulesA: (n: number) => void;
-  modulesB: number;
-  setModulesB: (n: number) => void;
-  perUnitCount: number;
-  setPerUnitCount: (n: number) => void;
+  fam: BydFamily;
+  n: number;
+  a: number;
+  b: number;
+  result: BuildResult;
+  onSelectFam: (id: string) => void;
+  onChangeN: (n: number) => void;
+  onChangeA: (n: number) => void;
+  onChangeB: (n: number) => void;
 }) {
   return (
     <div className="grid sm:grid-cols-2">
       <div className="p-5 sm:p-6 grid gap-6 sm:border-r sm:border-rule">
-        <Field n={1} title="Which family is installed?" help={family.blurb}>
-          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="family">
-            {FAMILIES.map((f) => {
-              const active = f.slug === family.slug;
+        <Field
+          n={1}
+          title="Which series is installed?"
+          help={
+            <>
+              See{" "}
+              <a href="#series" className="text-blue underline underline-offset-2">
+                Telling the series apart
+              </a>{" "}
+              below.
+            </>
+          }
+        >
+          <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Series">
+            {FAMS.map((f) => {
+              const active = f.id === fam.id;
               return (
                 <button
-                  key={f.slug}
+                  key={f.id}
                   type="button"
                   role="radio"
                   aria-checked={active}
-                  onClick={() => onSelectFamily(f)}
-                  className={`rounded-lg border px-3 py-1.5 text-[13px] font-medium transition-colors cursor-pointer ${
+                  onClick={() => onSelectFam(f.id)}
+                  className={`flex flex-col gap-0.5 rounded-lg border px-3.5 py-2 text-left text-[13.5px] font-medium leading-tight transition-colors cursor-pointer ${
                     active
                       ? "border-blue bg-blue/10 text-blue ring-1 ring-inset ring-blue/40"
                       : "border-rule bg-wash text-ink-soft hover:border-rule-strong"
                   }`}
                 >
-                  {f.label}
+                  {f.short || f.name}
+                  <span className={`text-[11px] font-normal tnum ${active ? "text-blue/80" : "text-ink-faint"}`}>
+                    {tileSubLabel(f)}
+                  </span>
                 </button>
               );
             })}
           </div>
-          <p className="mt-2 text-[11px] text-ink-faint">
-            Manufacturer on the nameplate: <span className="text-ink-soft">{family.manufacturer}</span>
-          </p>
         </Field>
 
-        <FamilyControls
-          family={family}
-          modules={modules}
-          setModules={setModules}
-          modulesA={modulesA}
-          setModulesA={setModulesA}
-          modulesB={modulesB}
-          setModulesB={setModulesB}
-          perUnitCount={perUnitCount}
-          setPerUnitCount={setPerUnitCount}
-        />
+        {fam.kind === "modules" && (
+          <Field
+            n={2}
+            title="Modules in the stack"
+            help="Count the battery modules only. The dark grey control unit on top is not a module and adds no capacity."
+          >
+            <div className="flex flex-wrap items-start gap-5">
+              <div>
+                <CountStepper value={n} min={fam.min} max={fam.max} onChange={onChangeN} />
+                <p className="mt-1.5 text-xs text-ink-faint tnum">
+                  {fam.min}–{fam.max} modules
+                </p>
+              </div>
+              <StackDiagram bricks={stackBricks(fam, Math.min(Math.max(n, fam.min), fam.max))} />
+            </div>
+          </Field>
+        )}
+
+        {fam.kind === "mix" && (
+          <Field n={2} title="Modules in the stack" help="HVE uses two module sizes. Count each size separately — the combination sets the model.">
+            <div className="flex flex-wrap items-start gap-5">
+              <div>
+                <p className="text-[11px] font-semibold text-ink-faint tnum">4.29 kWh</p>
+                <div className="mt-1.5">
+                  <CountStepper value={a} min={0} max={fam.maxTotal} onChange={onChangeA} />
+                </div>
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold text-ink-faint tnum">6.43 kWh</p>
+                <div className="mt-1.5">
+                  <CountStepper value={b} min={0} max={fam.maxTotal} onChange={onChangeB} />
+                </div>
+              </div>
+              <StackDiagram bricks={mixBricks(a, b)} />
+            </div>
+            <p className="mt-2.5 text-xs text-ink-faint tnum">1–{fam.maxTotal} modules in total</p>
+          </Field>
+        )}
       </div>
 
-      <BuildResult
-        family={family}
-        modules={modules}
-        modulesA={modulesA}
-        modulesB={modulesB}
-        perUnitCount={perUnitCount}
-      />
+      <BuildResultPanel result={result} />
     </div>
   );
 }
 
-function FamilyControls({
-  family,
-  modules,
-  setModules,
-  modulesA,
-  setModulesA,
-  modulesB,
-  setModulesB,
-  perUnitCount,
-  setPerUnitCount,
-}: {
-  family: BydFamily;
-  modules: number;
-  setModules: (n: number) => void;
-  modulesA: number;
-  setModulesA: (n: number) => void;
-  modulesB: number;
-  setModulesB: (n: number) => void;
-  perUnitCount: number;
-  setPerUnitCount: (n: number) => void;
-}) {
-  if (family.kind === "modules") {
-    return (
-      <Field
-        n={2}
-        title={`${family.label} modules in the photos`}
-        help={`Each module is ${family.moduleKwh?.toFixed(2)} kWh usable. Count only ${family.label} modules — a look-alike stack from another family doesn't count.`}
-      >
-        <NumberStepper
-          value={modules}
-          min={family.minModules ?? 1}
-          max={family.maxModules ?? 20}
-          onChange={setModules}
-          suffix="modules"
-        />
-      </Field>
-    );
-  }
-
-  if (family.kind === "dual-modules") {
-    return (
-      <>
-        <Field n={2} title={`${family.labelA} count`} help="Count the smaller HVE modules in the photos.">
-          <NumberStepper value={modulesA} min={0} max={family.maxA ?? 6} onChange={setModulesA} suffix="modules" />
-        </Field>
-        <Field n={3} title={`${family.labelB} count`} help="Count the larger HVE modules in the photos.">
-          <NumberStepper value={modulesB} min={0} max={family.maxB ?? 6} onChange={setModulesB} suffix="modules" />
-        </Field>
-      </>
-    );
-  }
-
-  if (family.kind === "per-unit") {
-    return (
-      <Field n={2} title="LV Flex modules in the photos" help="Every module is the same CEC model — the total is just the count.">
-        <NumberStepper value={perUnitCount} min={1} max={20} onChange={setPerUnitCount} suffix="modules" />
-      </Field>
-    );
-  }
-
-  return (
-    <p className="text-sm text-ink-soft leading-relaxed">
-      LVL is a single non-modular cabinet — there&apos;s nothing to count. The
-      nameplate names the complete unit directly.
-    </p>
-  );
-}
-
-function BuildResult({
-  family,
-  modules,
-  modulesA,
-  modulesB,
-  perUnitCount,
-}: {
-  family: BydFamily;
-  modules: number;
-  modulesA: number;
-  modulesB: number;
-  perUnitCount: number;
-}) {
-  if (family.kind === "fixed") {
-    return (
-      <div className="p-5 sm:p-6 bg-wash/60 grid gap-4 content-start">
-        <p className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">CEC approved model</p>
-        <div className="grid gap-3">
-          {family.rows.map((row, i) => (
-            <RowCard key={i} row={row} />
-          ))}
-        </div>
-        <p className="text-xs text-ink-faint leading-relaxed">
-          Both entries are the same model, re-approved for a later expiry window — either is valid depending on
-          installation date.
-        </p>
-      </div>
-    );
-  }
-
-  let total: number;
-  if (family.kind === "modules") {
-    total = round2(modules * (family.moduleKwh ?? 0));
-  } else if (family.kind === "dual-modules") {
-    total = round2(modulesA * (family.moduleKwhA ?? 0) + modulesB * (family.moduleKwhB ?? 0));
-  } else {
-    total = round2(perUnitCount * (family.moduleKwh ?? 0));
-  }
-
-  if (family.kind === "per-unit") {
-    const row = family.rows[0];
-    return (
-      <div className="p-5 sm:p-6 bg-wash/60 grid gap-4 content-start">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">CEC approved model</p>
-          <p className="mt-1.5 font-display font-extrabold text-xl sm:text-2xl tnum">{row.m}</p>
-          <p className="mt-1 text-xs text-ink-faint">Same model number at any module count.</p>
-        </div>
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm border-t border-rule pt-4">
-          <dt className="text-ink-faint">Modules × capacity</dt>
-          <dd className="tnum">
-            {perUnitCount} × {row.usable.toFixed(1)} kWh
-          </dd>
-          <dt className="text-ink-faint">Total usable capacity</dt>
-          <dd className="tnum font-medium text-ink">{total.toFixed(1)} kWh</dd>
-          <dt className="text-ink-faint">Approved</dt>
-          <dd className="tnum">{row.ap}</dd>
-          <dt className="text-ink-faint">Expires</dt>
-          <dd className="tnum">{row.ex}</dd>
-        </dl>
-      </div>
-    );
-  }
-
-  const { exact, nearest } = matchByCapacity(family.rows, total);
-
+function BuildResultPanel({ result }: { result: BuildResult }) {
   return (
     <div className="p-5 sm:p-6 bg-wash/60 grid gap-4 content-start">
       <div>
         <p className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">CEC approved model</p>
-        {exact.length === 1 ? (
-          <p className="mt-1.5 font-display font-extrabold text-xl sm:text-2xl tnum break-words">{exact[0].m}</p>
-        ) : exact.length > 1 ? (
-          <div className="mt-1.5 grid gap-1">
-            {exact.map((r) => (
-              <p key={r.m} className="font-display font-extrabold text-lg sm:text-xl tnum break-words">
-                {r.m}
-              </p>
-            ))}
+        <p className="mt-1.5 font-display font-extrabold text-xl sm:text-2xl tnum break-words">
+          {result.model ?? "Not a listed combination"}
+        </p>
+        {result.bucket && (
+          <div className="mt-2">
+            <BucketPill bucket={result.bucket} expires={result.expires} days={result.days} />
           </div>
-        ) : (
-          <p className="mt-1.5 font-display font-extrabold text-xl sm:text-2xl tnum text-ink-faint">
-            {total.toFixed(2)} kWh
-          </p>
         )}
       </div>
 
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm border-t border-rule pt-4">
-        <dt className="text-ink-faint">Total usable capacity</dt>
-        <dd className="tnum">{total.toFixed(2)} kWh</dd>
+        <dt className="text-ink-faint">Usable capacity</dt>
+        <dd className="tnum">{result.usable}</dd>
+        <dt className="text-ink-faint">Nominal capacity</dt>
+        <dd className="tnum">{result.nominal}</dd>
+        <dt className="text-ink-faint">Module capacity</dt>
+        <dd className="tnum">{result.moduleCap}</dd>
+        <dt className="text-ink-faint">Number of modules</dt>
+        <dd className="tnum">{result.moduleCount}</dd>
+        <dt className="text-ink-faint">Approved</dt>
+        <dd className="tnum">{result.approved}</dd>
+        <dt className="text-ink-faint">Expires</dt>
+        <dd className="tnum">{result.expires}</dd>
       </dl>
 
-      {exact.length === 1 && (
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm border-t border-rule pt-4">
-          <dt className="text-ink-faint">Approved</dt>
-          <dd className="tnum">{exact[0].ap}</dd>
-          <dt className="text-ink-faint">Expires</dt>
-          <dd className="tnum">{exact[0].ex}</dd>
-        </dl>
-      )}
+      <div className="border-t border-rule pt-4">
+        <p className="text-[11px] uppercase tracking-[0.14em] text-ink-faint">What it looks like</p>
+        <a
+          href={`#acc-${result.accId}`}
+          onClick={() => {
+            const el = document.getElementById(`acc-${result.accId}`);
+            if (el instanceof HTMLDetailsElement) el.open = true;
+          }}
+          className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-blue underline underline-offset-2"
+        >
+          See {result.accName} below →
+        </a>
+      </div>
 
-      {exact.length > 1 && (
-        <p className="border-t border-rule pt-4 text-xs text-ink-faint leading-relaxed">
-          <b className="text-ink-soft">Note:</b> {exact.length} CEC listings share this exact capacity. Match the
-          model string on the paperwork directly against one of the two above — the module split alone can&apos;t
-          tell them apart.
-        </p>
-      )}
-
-      {exact.length === 0 && nearest.length > 0 && (
-        <p className="border-t border-rule pt-4 text-xs text-ink-faint leading-relaxed">
-          <b className="text-ink-soft">No exact listing at {total.toFixed(2)} kWh.</b> Closest approved{" "}
-          {nearest.length === 1 ? "model" : "models"}: {nearest.map((r) => r.m).join(", ")}. Re-check the module
-          count against the photos.
-        </p>
-      )}
-
-      {exact.length === 0 && nearest.length === 0 && (
-        <p className="border-t border-rule pt-4 text-xs text-ink-faint leading-relaxed">
-          That combination isn&apos;t on the CEC approved list. Re-check the module count.
-        </p>
-      )}
+      <BuildNotes result={result} />
     </div>
   );
 }
 
-function RowCard({ row }: { row: BydRow }) {
+function BuildNotes({ result }: { result: BuildResult }) {
+  if (result.notes.length === 0) return null;
+
   return (
-    <div className="rounded-lg border border-rule bg-card p-3">
-      <p className="font-display font-extrabold text-lg tnum break-words">{row.m}</p>
-      <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-xs">
-        <dt className="text-ink-faint">Usable capacity</dt>
-        <dd className="tnum">{row.usable.toFixed(2)} kWh</dd>
-        <dt className="text-ink-faint">Approved</dt>
-        <dd className="tnum">{row.ap}</dd>
-        <dt className="text-ink-faint">Expires</dt>
-        <dd className="tnum">{row.ex}</dd>
-      </dl>
+    <div className="space-y-2.5 border-t border-rule pt-4 text-xs leading-relaxed text-ink-faint">
+      {result.notes.map((note, i) => {
+        if (note.kind === "not-listed") {
+          return (
+            <p key={i}>
+              <b className="text-ink-soft">That combination is not on the CEC list.</b> HVE is listed only
+              in the twelve combinations BYD submitted — try a different mix.
+            </p>
+          );
+        }
+        if (note.kind === "expired") {
+          return (
+            <p key={i}>
+              <b className="text-ink-soft">This listing has expired.</b> Valid for installations between{" "}
+              {note.ap} and {note.ex} — check the installation date falls inside that window.
+            </p>
+          );
+        }
+        if (note.kind === "expiring") {
+          return (
+            <p key={i}>
+              <b className="text-ink-soft">Expiring soon —</b> this listing lapses on {note.ex}, in{" "}
+              {note.days} days.
+            </p>
+          );
+        }
+        if (note.kind === "hvm-cross-check") {
+          return (
+            <p key={i}>
+              <b className="text-ink-soft">Check it is not an HVM+.</b>{" "}
+              <span className="tnum">{note.other}</span> has exactly the same capacity under a separate
+              listing.
+            </p>
+          );
+        }
+        if (note.kind === "hvm-plus-cross-check") {
+          return (
+            <p key={i}>
+              <b className="text-ink-soft">Check it is not an HVM.</b>{" "}
+              <span className="tnum">{note.other}</span> has exactly the same capacity under the older
+              listing.
+            </p>
+          );
+        }
+        return (
+          <p key={i}>
+            <b className="text-ink-soft">Each module is listed separately.</b> A rack of six is six ×{" "}
+            <span className="tnum">LV Flex</span>, not a single larger model.
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
+function BucketPill({
+  bucket,
+  expires,
+  days,
+}: {
+  bucket: "expired" | "expiring" | "current";
+  expires: string;
+  days: number | null;
+}) {
+  const label =
+    bucket === "expired"
+      ? `CEC listing expired ${expires}`
+      : bucket === "expiring"
+        ? `Expires in ${days} days`
+        : "Current CEC listing";
+  const tone =
+    bucket === "expired"
+      ? "bg-red/15 text-red-deep"
+      : bucket === "expiring"
+        ? "bg-amber/15 text-amber-deep"
+        : "bg-green/15 text-green-deep";
+  return (
+    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.01em] ${tone}`}>
+      {label}
+    </span>
+  );
+}
+
+function StackDiagram({ bricks }: { bricks: Brick[] }) {
+  return (
+    <div aria-hidden="true" className="flex flex-col gap-0.5">
+      {bricks.map((brick, i) => (
+        <div
+          key={i}
+          className={`w-[108px] rounded border px-2 text-center text-[9.5px] font-semibold leading-4 ${
+            brick.kind === "control"
+              ? "h-[22px] border-blue bg-blue/15 leading-[22px] text-blue"
+              : "h-4 border-green/50 bg-green/15 text-green-deep"
+          }`}
+        >
+          {brick.label}
+        </div>
+      ))}
     </div>
   );
 }
@@ -388,7 +379,7 @@ function CheckPane({
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="HVS 7.7"
+          placeholder="HVM 16.6"
           autoComplete="off"
           spellCheck={false}
           className="mt-2.5 w-full rounded-lg border border-rule-strong bg-card px-3.5 py-2.5 font-mono text-sm tnum outline-none focus:border-blue focus:ring-2 focus:ring-blue/15"
@@ -419,21 +410,61 @@ function VerdictCard({ verdict }: { verdict: Verdict }) {
     return (
       <Card tone="neutral" pill="Awaiting input" heading="Paste or type the model recorded on the paperwork">
         <p>
-          Spacing and case are ignored — the check matches the model itself against all BYD rows of the CEC
-          approved battery list.
+          Spacing, case and punctuation are ignored — the check matches the model itself against the 45 BYD
+          models on the CEC approved battery list.
         </p>
       </Card>
     );
   }
 
   if (verdict.kind === "match") {
-    const { family, row } = verdict;
+    const { row, bucket, moduleCap, moduleCount, info, crossCheck, duplicate } = verdict;
+    const tone = bucket === "current" ? "ok" : "warn";
+    const pill =
+      bucket === "expired" ? "Listed, but expired" : bucket === "expiring" ? "Listed — expiring soon" : "On the CEC list";
+    const visual = checkVisual(info);
+
     return (
-      <Card tone="ok" pill="On the CEC list" heading={row.m}>
-        <p>
-          <b>{family.label}</b> family — {row.usable.toFixed(2)} kWh usable · approved {row.ap} · expires {row.ex}
-        </p>
-        <p className="mt-2.5 text-xs text-ink-faint">{family.blurb}</p>
+      <Card tone={tone} pill={pill} heading={row.m}>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-[13.5px]">
+          <dt className="text-ink-faint">Usable capacity</dt>
+          <dd className="tnum text-ink-soft">{row.use.toFixed(2)} kWh</dd>
+          <dt className="text-ink-faint">Nominal capacity</dt>
+          <dd className="tnum text-ink-soft">{row.nom.toFixed(2)} kWh</dd>
+          <dt className="text-ink-faint">Module capacity</dt>
+          <dd className="tnum text-ink-soft">{moduleCap}</dd>
+          <dt className="text-ink-faint">Number of modules</dt>
+          <dd className="tnum text-ink-soft">{moduleCount}</dd>
+          <dt className="text-ink-faint">Approved</dt>
+          <dd className="tnum text-ink-soft">{row.ap}</dd>
+          <dt className="text-ink-faint">Expires</dt>
+          <dd className="tnum text-ink-soft">{row.ex}</dd>
+        </dl>
+
+        {bucket === "expired" && <p className="mt-2.5">This window has closed — check the installation date falls inside it.</p>}
+
+        {crossCheck === "HVM+" && (
+          <p className="mt-2.5">
+            <b>Confirm it is not an HVM+.</b> That series carries the same capacity under a separate listing.
+          </p>
+        )}
+        {crossCheck === "HVM" && (
+          <p className="mt-2.5">
+            <b>Confirm it is not an HVM.</b> That series carries the same capacity under the older listing.
+          </p>
+        )}
+
+        {visual && (
+          <div className="mt-3">
+            <StackDiagram bricks={visual} />
+          </div>
+        )}
+
+        {duplicate && (
+          <p className="mt-2.5 text-xs text-ink-faint">
+            This model appears on the list more than once; the current listing is shown.
+          </p>
+        )}
       </Card>
     );
   }
@@ -444,23 +475,19 @@ function VerdictCard({ verdict }: { verdict: Verdict }) {
         <span className="tnum">{verdict.raw}</span> does not match an approved BYD model. The Clean Energy
         Regulator requires the exact listed string.
       </p>
-      {verdict.near.length > 0 ? (
+      {verdict.near.length > 0 && (
         <>
           <p className="mt-2.5">
             <b>Closest listed models:</b>
           </p>
           <ul className="mt-1.5 list-disc space-y-1 pl-4">
-            {verdict.near.map((r) => (
-              <li key={r.m}>
-                <span className="tnum">{r.m}</span> <span className="text-ink-faint">({r.family})</span>
+            {verdict.near.map((r, i) => (
+              <li key={i}>
+                <span className="tnum">{r.m}</span>
               </li>
             ))}
           </ul>
         </>
-      ) : (
-        <p className="mt-2.5">
-          Use the <b>From the photos</b> tab to build the correct string from what the installation photos show.
-        </p>
       )}
     </Card>
   );
@@ -495,7 +522,7 @@ function Card({
       <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[0.01em] ${pillTone}`}>
         {pill}
       </span>
-      <h3 className="mt-2.5 text-sm font-medium">{heading}</h3>
+      <h3 className="mt-2.5 text-sm font-medium break-words">{heading}</h3>
       <div className="mt-2 text-sm leading-relaxed text-ink-soft [&_b]:font-medium [&_b]:text-ink">{children}</div>
     </div>
   );
@@ -509,7 +536,7 @@ function Field({
 }: {
   n: number;
   title: string;
-  help: string;
+  help: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -526,41 +553,38 @@ function Field({
   );
 }
 
-function NumberStepper({
+function CountStepper({
   value,
   min,
   max,
   onChange,
-  suffix,
 }: {
   value: number;
   min: number;
   max: number;
   onChange: (n: number) => void;
-  suffix: string;
 }) {
   return (
-    <div className="flex items-center gap-2.5 rounded-lg border border-rule bg-wash px-3 py-1.5 w-fit">
+    <div className="flex items-center gap-1.5 rounded-lg border border-rule bg-wash px-1.5 py-1.5 w-fit">
       <button
         type="button"
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        aria-label={`Remove one`}
-        className="h-7 w-7 rounded-md border border-rule text-ink-soft leading-none hover:border-rule-strong hover:text-ink disabled:opacity-25 disabled:cursor-default transition-colors cursor-pointer"
+        aria-label="One fewer module"
+        className="h-8 w-8 rounded-md border border-rule bg-card text-ink-soft leading-none hover:border-rule-strong hover:text-ink disabled:opacity-25 disabled:cursor-default transition-colors cursor-pointer"
       >
         −
       </button>
-      <span className="w-6 text-center text-sm tnum">{value}</span>
+      <span className="w-8 text-center text-sm font-semibold tnum">{value}</span>
       <button
         type="button"
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        aria-label={`Add one`}
-        className="h-7 w-7 rounded-md border border-rule text-ink-soft leading-none hover:border-rule-strong hover:text-ink disabled:opacity-25 disabled:cursor-default transition-colors cursor-pointer"
+        aria-label="One more module"
+        className="h-8 w-8 rounded-md border border-rule bg-card text-ink-soft leading-none hover:border-rule-strong hover:text-ink disabled:opacity-25 disabled:cursor-default transition-colors cursor-pointer"
       >
         +
       </button>
-      <span className="text-xs text-ink-faint">{suffix}</span>
     </div>
   );
 }
