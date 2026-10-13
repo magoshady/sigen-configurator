@@ -75,7 +75,7 @@ function SystemItem({ sys, today }: { sys: System; today: Date }) {
         <div>
           <p className="max-w-[62ch] text-[13.5px] leading-relaxed text-ink-soft">{sys.desc}</p>
           <p className="mt-2.5 max-w-[62ch] text-[13.5px] leading-relaxed text-ink-soft">
-            <b className="font-medium text-ink">What to look for:</b> {withBold(sys.tell)}
+            <b className="font-medium text-ink">How to recognise it:</b> {withBold(sys.tell)}
           </p>
 
           <BatteryTable rows={rows} />
