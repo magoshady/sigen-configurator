@@ -215,9 +215,9 @@ export const FAMS: Record<string, Family> = {
     min: 1,
     max: 1,
     modcap: "5.04 kWh nominal / 4.79 kWh usable",
-    sys: "smile5",
+    sys: "allinone",
     models: { 1: "SMILE-BAT-5P" },
-    note: "Only the single module is CEC listed, although the hardware supports up to six in parallel. If more than one is installed, check how the installer recorded it.",
+    note: "This is the battery module used by the SMILE-S5 and SMILE-B5. A lone SMILE-BAT-5P and a SMILE-S5 carry the same capacity, because an S5 is this module with its inverter on top — check which one the nameplate gives.",
     exp: false,
   },
   bat101: {
@@ -396,7 +396,7 @@ export const SYS: System[] = [
   },
   {
     k: "allinone",
-    n: "SMILE-S5 / B5",
+    n: "SMILE-S5 / B5 / B3-PLUS",
     sub: "Single phase · 5 kW · all-in-one",
     desc: "Inverter and battery in a single wall-mounted cabinet, with further modules added below. The S5 is the hybrid for new solar; the B5 is the AC-coupled version added to existing solar. The discontinued B3-PLUS belongs to the same family.",
     tell: "There is <b>no separate inverter on the wall</b> — one slim cabinet does both jobs. A black vertical strip runs down the middle of the front face.",
